@@ -1,2 +1,2 @@
 # curv3d
-Libary for rasterization uising bézier surfaces.
+Libary for rasterization using bézier surfaces.
