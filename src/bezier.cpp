@@ -1,6 +1,7 @@
 
 #include <bezier.h>
 #include <cmath>
+#include <fstream>
 
 
 
@@ -14,6 +15,11 @@ float bernstein(int n, int i, float u)
     return (factorial(n) / (factorial(i)*factorial(n-i))) * std::pow(u, i) * std::pow((1-u), n-i);
 }
 
+
+void printPoint3D(Point3D point)
+{
+    std::cout << "x: " << point.xCoord() << "  y: " << point.yCoord() << "  z: " << point.zCoord() << std::endl;
+}
 
 Point3D::Point3D()
 {
@@ -138,7 +144,7 @@ void Surface::insertControlPoint(Point3D point)
 
 void Surface::removeControlPoint(int i, int j)
 {
-    size_t pos = (j*_n + i) + 1;
+    size_t pos = (i*(_n+1) + j) + 1;
     if (pos <= _control_points.size())
     {
         _control_points.erase(_control_points.begin() + pos);
@@ -153,19 +159,19 @@ Point3D Surface::generatePoint(float u, float v)
 {
     Point3D point = {0.0, 0.0, 0.0};
 
-    for (size_t i=0; i<u; i++)
+    for (size_t i=0; i<=_n; i++)
     {
-        for (size_t j=0; j<v; j++)
+        for (size_t j=0; j<=_m; j++)
         {
             // Bernstein Polynomials
             float b_i = bernstein(_n, i, u);
             float b_j = bernstein(_m, j, v);
 
-            std::cout << "i: " << b_i << std::endl;
-            std::cout << "j: " << b_j << std::endl;
+            // std::cout << "b_i: " << b_i << std::endl;
+            // std::cout << "b_j: " << b_j << std::endl;
 
             // Calculate the scaled control point
-            Point3D scaled_control_point = _control_points[j*_n + i];
+            Point3D scaled_control_point = _control_points[i*(_n+1) + j];
             scaled_control_point *= (b_i * b_j);
 
             // Summate
@@ -176,21 +182,58 @@ Point3D Surface::generatePoint(float u, float v)
     return point;
 }
 
-void printPoint3D(Point3D point)
-{
-    std::cout << "x: " << point.xCoord() << std::endl;
-    std::cout << "y: " << point.yCoord() << std::endl;
-    std::cout << "z: " << point.zCoord() << std::endl;
-}
-
 
 int main()
 {
-    Surface surface(2, 2);
+    Surface surface(1, 1);
+
+    // PLANE
     surface.insertControlPoint(Point3D(0, 0, 0));
     surface.insertControlPoint(Point3D(1, 0, 0));
     surface.insertControlPoint(Point3D(0, 1, 0));
     surface.insertControlPoint(Point3D(1, 1, 0));
+
+
+    // UNIT SQUARE
+    // surface.insertControlPoint(Point3D(0, 0, 0));
+    // surface.insertControlPoint(Point3D(1, 0, 0));
+    // surface.insertControlPoint(Point3D(1, 1, 0));
+    // surface.insertControlPoint(Point3D(0, 1, 0));
+    // surface.insertControlPoint(Point3D(0, 0, 1));
+    // surface.insertControlPoint(Point3D(1, 0, 1));
+    // surface.insertControlPoint(Point3D(1, 1, 1));
+    // surface.insertControlPoint(Point3D(0, 1, 1));
+
     
-    printPoint3D(surface.generatePoint(1, 2));
+
+    std::vector<Point3D> points;
+    for (int i=0; i<=100; i++)
+    {
+        for (int j=0; j<=100; j++)
+        {
+            float u = i / 100.0;
+            float v = j / 100.0;
+            // std::cout << u << " " << v << std::endl;
+
+            Point3D point = surface.generatePoint(u, v);
+            printPoint3D(point);
+            points.push_back(point);
+        }
+    }
+
+    // Store points into a txt file
+    std::fstream file;
+    file.open("../scripts/points.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+    if (file.is_open())
+    {
+        for (auto& point : points)
+        {
+            file << "x: " << point.xCoord() << "  y: " << point.yCoord() << "  z: " << point.zCoord() << std::endl;
+        }
+    }
+    else
+    {
+        std::cout << "Can't open file!" << std::endl;
+    }
+    file.close();
 }
