@@ -7,3 +7,6 @@ build
 
 # Point data
 scripts/points.txt
+
+# Run script
+scripts/run_curv3d.sh

@@ -21,16 +21,16 @@ class Point3D
         Point3D(float x, float y, float z);
         ~Point3D() {};
 
-        float xCoord();
-        float yCoord();
-        float zCoord();
+        float xCoord() const;
+        float yCoord() const;
+        float zCoord() const;
 
-        Point3D& operator=(const Point3D& other);
-        Point3D& operator+=(const Point3D& other);
-        Point3D& operator-=(const Point3D& other);
+        Point3D& operator=(Point3D const & other);
+        Point3D& operator+=(Point3D const & other);
+        Point3D& operator-=(Point3D const & other);
         Point3D& operator*=(float scalar);
-        Point3D operator+(const Point3D& rhs);
-        Point3D operator-(const Point3D& rhs);
+        Point3D operator+(Point3D const & rhs);
+        Point3D operator-(Point3D const & rhs);
         
     private:
         float _x;
@@ -46,6 +46,8 @@ class Surface
         Surface(int n, int m);
         ~Surface() {};
 
+        std::vector<Point3D> const & getControlPoints() const;
+        
         void insertControlPoint(Point3D point);
         void removeControlPoint(int i, int j);
         Point3D generatePoint(float u, float v);
