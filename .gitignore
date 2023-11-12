@@ -4,3 +4,6 @@
 
 # Build directory
 build
+
+# Point data
+scripts/points.txt

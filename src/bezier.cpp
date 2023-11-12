@@ -163,7 +163,7 @@ Point3D Surface::generatePoint(float u, float v)
     {
         for (size_t j=0; j<=_m; j++)
         {
-            // Bernstein Polynomials
+            // Bernstein Basis Polynomials
             float b_i = bernstein(_n, i, u);
             float b_j = bernstein(_m, j, v);
 
@@ -185,16 +185,16 @@ Point3D Surface::generatePoint(float u, float v)
 
 int main()
 {
-    Surface surface(1, 1);
+    /* PLANE */
+    // Surface surface(1, 1);
+    // surface.insertControlPoint(Point3D(0, 0, 0));
+    // surface.insertControlPoint(Point3D(1, 0, 0));
+    // surface.insertControlPoint(Point3D(0, 1, 0));
+    // surface.insertControlPoint(Point3D(1, 1, 0));
 
-    // PLANE
-    surface.insertControlPoint(Point3D(0, 0, 0));
-    surface.insertControlPoint(Point3D(1, 0, 0));
-    surface.insertControlPoint(Point3D(0, 1, 0));
-    surface.insertControlPoint(Point3D(1, 1, 0));
 
-
-    // UNIT SQUARE
+    /* CUBE */
+    // Surface surface(2, 2);
     // surface.insertControlPoint(Point3D(0, 0, 0));
     // surface.insertControlPoint(Point3D(1, 0, 0));
     // surface.insertControlPoint(Point3D(1, 1, 0));
@@ -204,6 +204,13 @@ int main()
     // surface.insertControlPoint(Point3D(1, 1, 1));
     // surface.insertControlPoint(Point3D(0, 1, 1));
 
+
+    /* DIP */
+    Surface surface(1, 1);
+    surface.insertControlPoint(Point3D(0, 0, .5));
+    surface.insertControlPoint(Point3D(1, .3, .5));
+    surface.insertControlPoint(Point3D(.3, 1, .5));
+    surface.insertControlPoint(Point3D(.7, .6, .2));
     
 
     std::vector<Point3D> points;
@@ -213,7 +220,6 @@ int main()
         {
             float u = i / 100.0;
             float v = j / 100.0;
-            // std::cout << u << " " << v << std::endl;
 
             Point3D point = surface.generatePoint(u, v);
             printPoint3D(point);
@@ -228,7 +234,7 @@ int main()
     {
         for (auto& point : points)
         {
-            file << "x: " << point.xCoord() << "  y: " << point.yCoord() << "  z: " << point.zCoord() << std::endl;
+            file << point.xCoord() << ", " << point.yCoord() << ", " << point.zCoord() << std::endl;
         }
     }
     else
