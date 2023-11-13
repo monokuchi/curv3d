@@ -48,7 +48,14 @@ class Surface
 
         std::vector<Point3D> const & getControlPoints() const;
         
-        void insertControlPoint(Point3D point);
+        // Return reference, mutable for surface[{i,j}] = Point3D(x, y, z)
+        Point3D& controlPoint(uint const i, uint const j);
+        Point3D& operator[](std::initializer_list<uint> const indices);
+
+        // Return const reference, for cases the surface should be const, but we still want it to be readable
+        const Point3D& controlPoint(uint const i, uint const j) const;
+        const Point3D& operator[](std::initializer_list<uint> const indices) const;
+
         void removeControlPoint(int i, int j);
         Point3D generatePoint(float u, float v);
     
@@ -56,7 +63,6 @@ class Surface
         int _n;
         int _m;
         std::vector<Point3D> _control_points; // Should be of size (_n+1)(_m+1)
-
 };
 
 

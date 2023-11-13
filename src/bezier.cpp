@@ -119,7 +119,7 @@ Surface::Surface()
     _n = 0;
     _m = 0;
 
-    _control_points.reserve((_n+1)*(_m+1));
+    _control_points.resize((_n+1)*(_m+1));
 }
 
 Surface::Surface(int n, int m)
@@ -127,7 +127,7 @@ Surface::Surface(int n, int m)
     _n = n;
     _m = m;
 
-    _control_points.reserve((_n+1)*(_m+1));
+    _control_points.resize((_n+1)*(_m+1));
 }
 
 std::vector<Point3D> const & Surface::getControlPoints() const
@@ -135,15 +135,59 @@ std::vector<Point3D> const & Surface::getControlPoints() const
     return _control_points;
 }
 
-void Surface::insertControlPoint(Point3D point)
+Point3D& Surface::controlPoint(uint const i, uint const j)
 {
-    if (_control_points.size() < (_n+1)*(_m+1))
+    // surface.controlPoint(i, j) = Point3D(x, y, z);
+    if (i*(_n+1) + j > (_n+1)*(_m+1))
     {
-        _control_points.push_back(point);
+        std::cout << "Exceeded total number of allowed control points!" << std::endl;
+        throw std::exception();
     }
     else
     {
+        return _control_points[i*(_n+1) + j];
+    }
+}
+
+Point3D& Surface::operator[](std::initializer_list<uint> const indices)
+{
+    // surface[{i, j}] = Point3D(x, y, z);
+    if (indices.size() == 2)
+    {
+        return controlPoint(*indices.begin(), *(indices.end()-1));
+    }
+    else
+    {
+        std::cout << "Number of indices is not 2!" << std::endl;
+        throw std::exception();
+    }
+}
+
+const Point3D& Surface::controlPoint(uint const i, uint const j) const
+{
+    // surface.controlPoint(i, j) = Point3D(x, y, z);
+    if (i*(_n+1) + j > (_n+1)*(_m+1))
+    {
         std::cout << "Exceeded total number of allowed control points!" << std::endl;
+        throw std::exception();
+    }
+    else
+    {
+        return _control_points[i*(_n+1) + j];
+    }
+}
+
+const Point3D& Surface::operator[](std::initializer_list<uint> const indices) const
+{
+    // surface[{i, j}] = Point3D(x, y, z);
+    if (indices.size() == 2)
+    {
+        return controlPoint(*indices.begin(), *(indices.end()-1));
+    }
+    else
+    {
+        std::cout << "Number of indices is not 2!" << std::endl;
+        throw std::exception();
     }
 }
 
@@ -192,43 +236,37 @@ int main()
 {
     /* PLANE */
     // Surface surface(1, 1);
-    // surface.insertControlPoint(Point3D(0, 0, 0));
-    // surface.insertControlPoint(Point3D(1, 0, 0));
-    // surface.insertControlPoint(Point3D(0, 1, 0));
-    // surface.insertControlPoint(Point3D(1, 1, 0));
+    // surface[{0, 0}] = Point3D(0, 0, 0);
+    // surface[{1, 0}] = Point3D(1, 0, 0);
+    // surface[{0, 1}] = Point3D(0, 1, 0);
+    // surface[{1, 1}] = Point3D(1, 1, 0);
 
-
-    /* CUBE */
-    // Surface surface(2, 2);
-    // surface.insertControlPoint(Point3D(0, 0, 0));
-    // surface.insertControlPoint(Point3D(1, 0, 0));
-    // surface.insertControlPoint(Point3D(1, 1, 0));
-    // surface.insertControlPoint(Point3D(0, 1, 0));
-    // surface.insertControlPoint(Point3D(0, 0, 1));
-    // surface.insertControlPoint(Point3D(1, 0, 1));
-    // surface.insertControlPoint(Point3D(1, 1, 1));
-    // surface.insertControlPoint(Point3D(0, 1, 1));
+    // surface.controlPoint(0, 0) = Point3D(0, 0, 0);
+    // surface.controlPoint(1, 0) = Point3D(1, 0, 0);
+    // surface.controlPoint(0, 1) = Point3D(0, 1, 0);
+    // surface.controlPoint(1, 1) = Point3D(1, 1, 0);
 
 
     /* DIP */
-    // Surface surface(1, 1);
-    // surface.insertControlPoint(Point3D(0, 0, .5));
-    // surface.insertControlPoint(Point3D(1, .3, .5));
-    // surface.insertControlPoint(Point3D(.3, 1, .5));
-    // surface.insertControlPoint(Point3D(.7, .6, .2));
+    Surface surface(1, 1);
+    surface[{0, 0}] = Point3D(0, 0, .5);
+    surface[{1, 0}] = Point3D(1, .3, .5);
+    surface[{0, 1}] = Point3D(.3, 1, .5);
+    surface[{1, 1}] = Point3D(.7, .6, .2);
 
 
-    /* Umbrella */
-    Surface surface(2, 2);
-    surface.insertControlPoint(Point3D(0, 0, 0));
-    surface.insertControlPoint(Point3D(.5, 0, .5));
-    surface.insertControlPoint(Point3D(1, 0, 0));
-    surface.insertControlPoint(Point3D(0, .5, .5));
-    surface.insertControlPoint(Point3D(0, 1, 0));
-    surface.insertControlPoint(Point3D(.5, 1, .5));
-    surface.insertControlPoint(Point3D(1, 1, 0));
-    surface.insertControlPoint(Point3D(1, .5, .5));
-    surface.insertControlPoint(Point3D(.5, .5, 1));
+    /* UMBRELLA */
+    // Surface surface(2, 2);
+    // surface[{0, 0}] = Point3D(0, 0, 0);
+    // surface[{1, 0}] = Point3D(.5, 0, .5);
+    // surface[{2, 0}] = Point3D(1, 0, 0);
+    // surface[{0, 1}] = Point3D(0, .5, .5);
+    // surface[{1, 1}] = Point3D(.5, .5, 1);
+    // surface[{2, 1}] = Point3D(1, .5, .5);
+    // surface[{0, 2}] = Point3D(0, 1, 0);
+    // surface[{1, 2}] = Point3D(.5, 1, .5);
+    // surface[{2, 2}] = Point3D(1, 1, 0);
+
 
 
 
