@@ -16,104 +16,6 @@ float bernstein(int n, int i, float u)
 }
 
 
-void printPoint3D(Point3D point)
-{
-    std::cout << "x: " << point.xCoord() << "  y: " << point.yCoord() << "  z: " << point.zCoord() << std::endl;
-}
-
-Point3D::Point3D()
-{
-    _x = 0.0;
-    _y = 0.0;
-    _z = 0.0;
-}
-
-Point3D::Point3D(float x, float y, float z)
-{
-    _x = x;
-    _y = y;
-    _z = z;
-}
-
-float Point3D::xCoord() const
-{
-    return _x;
-}
-
-float Point3D::yCoord() const
-{
-    return _y;
-}
-
-float Point3D::zCoord() const
-{
-    return _z;
-}
-
-Point3D& Point3D::operator=(Point3D const & other)
-{
-    if (this == &other)
-    {
-        return *this;
-    }
-    
-    this->_x = other._x;
-    this->_y = other._y;
-    this->_z = other._z;
-
-    return *this;
-}
-
-Point3D& Point3D::operator+=(Point3D const & other)
-{
-    this->_x += other._x;
-    this->_y += other._y;
-    this->_z += other._z;
-
-    return *this;
-}
-
-Point3D& Point3D::operator-=(Point3D const & other)
-{
-    this->_x += other._x;
-    this->_y += other._y;
-    this->_z += other._z;
-
-    return *this;
-}
-
-Point3D& Point3D::operator*=(float scalar)
-{
-    this->_x *= scalar;
-    this->_y *= scalar;
-    this->_z *= scalar;
-
-    return *this;
-}
-
-Point3D Point3D::operator+(Point3D const & rhs)
-{
-    Point3D point = *this;
-
-    point._x += rhs._x;
-    point._y += rhs._y;
-    point._z += rhs._z;
-
-    return point;
-}
-
-Point3D Point3D::operator-(Point3D const & rhs)
-{
-    Point3D point = *this;
-
-    point._x -= rhs._x;
-    point._y -= rhs._y;
-    point._z -= rhs._z;
-
-    return point;
-}
-
-
 Surface::Surface()
 {
     _n = 0;
@@ -130,9 +32,19 @@ Surface::Surface(int n, int m)
     _control_points.resize((_n+1)*(_m+1));
 }
 
+std::pair<int, int> Surface::getOrder() const
+{
+    return std::make_pair(_n, _m);
+}
+
 std::vector<Point3D> const & Surface::getControlPoints() const
 {
     return _control_points;
+}
+
+uint Surface::getNumControlPoints()
+{
+    return (_n+1)*(_m+1);
 }
 
 Point3D& Surface::controlPoint(uint const i, uint const j)
@@ -204,7 +116,7 @@ void Surface::removeControlPoint(int i, int j)
     }
 }
 
-Point3D Surface::generatePoint(float u, float v)
+Point3D Surface::generatePoint(float u, float v) const
 {
     Point3D point;
 
@@ -232,83 +144,83 @@ Point3D Surface::generatePoint(float u, float v)
 }
 
 
-int main()
-{
-    /* PLANE */
-    // Surface surface(1, 1);
-    // surface[{0, 0}] = Point3D(0, 0, 0);
-    // surface[{1, 0}] = Point3D(1, 0, 0);
-    // surface[{0, 1}] = Point3D(0, 1, 0);
-    // surface[{1, 1}] = Point3D(1, 1, 0);
+// int main()
+// {
+//     /* PLANE */
+//     // Surface surface(1, 1);
+//     // surface[{0, 0}] = Point3D(0, 0, 0);
+//     // surface[{1, 0}] = Point3D(1, 0, 0);
+//     // surface[{0, 1}] = Point3D(0, 1, 0);
+//     // surface[{1, 1}] = Point3D(1, 1, 0);
 
-    // surface.controlPoint(0, 0) = Point3D(0, 0, 0);
-    // surface.controlPoint(1, 0) = Point3D(1, 0, 0);
-    // surface.controlPoint(0, 1) = Point3D(0, 1, 0);
-    // surface.controlPoint(1, 1) = Point3D(1, 1, 0);
-
-
-    /* DIP */
-    Surface surface(1, 1);
-    surface[{0, 0}] = Point3D(0, 0, .5);
-    surface[{1, 0}] = Point3D(1, .3, .5);
-    surface[{0, 1}] = Point3D(.3, 1, .5);
-    surface[{1, 1}] = Point3D(.7, .6, .2);
+//     // surface.controlPoint(0, 0) = Point3D(0, 0, 0);
+//     // surface.controlPoint(1, 0) = Point3D(1, 0, 0);
+//     // surface.controlPoint(0, 1) = Point3D(0, 1, 0);
+//     // surface.controlPoint(1, 1) = Point3D(1, 1, 0);
 
 
-    /* UMBRELLA */
-    // Surface surface(2, 2);
-    // surface[{0, 0}] = Point3D(0, 0, 0);
-    // surface[{1, 0}] = Point3D(.5, 0, .5);
-    // surface[{2, 0}] = Point3D(1, 0, 0);
-    // surface[{0, 1}] = Point3D(0, .5, .5);
-    // surface[{1, 1}] = Point3D(.5, .5, 1);
-    // surface[{2, 1}] = Point3D(1, .5, .5);
-    // surface[{0, 2}] = Point3D(0, 1, 0);
-    // surface[{1, 2}] = Point3D(.5, 1, .5);
-    // surface[{2, 2}] = Point3D(1, 1, 0);
+//     /* DIP */
+//     Surface surface(1, 1);
+//     surface[{0, 0}] = Point3D(0, 0, .5);
+//     surface[{1, 0}] = Point3D(1, .3, .5);
+//     surface[{0, 1}] = Point3D(.3, 1, .5);
+//     surface[{1, 1}] = Point3D(.7, .6, .2);
+
+
+//     /* UMBRELLA */
+//     // Surface surface(2, 2);
+//     // surface[{0, 0}] = Point3D(0, 0, 0);
+//     // surface[{1, 0}] = Point3D(.5, 0, .5);
+//     // surface[{2, 0}] = Point3D(1, 0, 0);
+//     // surface[{0, 1}] = Point3D(0, .5, .5);
+//     // surface[{1, 1}] = Point3D(.5, .5, 1);
+//     // surface[{2, 1}] = Point3D(1, .5, .5);
+//     // surface[{0, 2}] = Point3D(0, 1, 0);
+//     // surface[{1, 2}] = Point3D(.5, 1, .5);
+//     // surface[{2, 2}] = Point3D(1, 1, 0);
 
 
 
 
     
-    // Generate the points
-    std::vector<Point3D> points;
-    for (int i=0; i<=100; i++)
-    {
-        for (int j=0; j<=100; j++)
-        {
-            float u = i / 100.0;
-            float v = j / 100.0;
+//     // Generate the points
+//     std::vector<Point3D> points;
+//     for (size_t i=0; i<=100; i++)
+//     {
+//         for (size_t j=0; j<=100; j++)
+//         {
+//             float u = i / 100.0;
+//             float v = j / 100.0;
 
-            Point3D point = surface.generatePoint(u, v);
-            printPoint3D(point);
-            points.push_back(point);
-        }
-    }
+//             Point3D point = surface.generatePoint(u, v);
+//             point.printPoint3D();
+//             points.push_back(point);
+//         }
+//     }
 
-    // Get the control points
-    std::vector<Point3D> control_points = surface.getControlPoints();
+//     // Get the control points
+//     std::vector<Point3D> control_points = surface.getControlPoints();
 
-    // Store points into a text file
-    std::fstream file;
-    file.open("../scripts/points.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
-    if (file.is_open())
-    {
-        for (auto& point : points)
-        {
-            file << point.xCoord() << ", " << point.yCoord() << ", " << point.zCoord() << std::endl;
-        }
+//     // Store points into a text file
+//     std::fstream file;
+//     file.open("../scripts/points.txt", std::fstream::in | std::fstream::out | std::fstream::trunc);
+//     if (file.is_open())
+//     {
+//         for (auto& point : points)
+//         {
+//             file << point.xCoord() << ", " << point.yCoord() << ", " << point.zCoord() << std::endl;
+//         }
 
-        file << "ControlPoints" << std::endl;
+//         file << "ControlPoints" << std::endl;
 
-        for (auto& control_point : control_points)
-        {
-            file << control_point.xCoord() << ", " << control_point.yCoord() << ", " << control_point.zCoord() << std::endl;
-        }
-    }
-    else
-    {
-        std::cout << "Can't open file!" << std::endl;
-    }
-    file.close();
-}
+//         for (auto& control_point : control_points)
+//         {
+//             file << control_point.xCoord() << ", " << control_point.yCoord() << ", " << control_point.zCoord() << std::endl;
+//         }
+//     }
+//     else
+//     {
+//         std::cout << "Can't open file!" << std::endl;
+//     }
+//     file.close();
+// }

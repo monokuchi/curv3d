@@ -5,38 +5,8 @@
 #include <iostream>
 #include <vector>
 
+#include <util.h>
 
-
-// typedef struct Point3D
-// {
-//     float x;
-//     float y;
-//     float z;
-// } Point3D;
-
-class Point3D
-{
-    public:
-        Point3D();
-        Point3D(float x, float y, float z);
-        ~Point3D() {};
-
-        float xCoord() const;
-        float yCoord() const;
-        float zCoord() const;
-
-        Point3D& operator=(Point3D const & other);
-        Point3D& operator+=(Point3D const & other);
-        Point3D& operator-=(Point3D const & other);
-        Point3D& operator*=(float scalar);
-        Point3D operator+(Point3D const & rhs);
-        Point3D operator-(Point3D const & rhs);
-        
-    private:
-        float _x;
-        float _y;
-        float _z;
-};
 
 
 class Surface
@@ -46,7 +16,13 @@ class Surface
         Surface(int n, int m);
         ~Surface() {};
 
+        // Returns the order of the surface (_n, _m)
+        std::pair<int, int> getOrder() const;
+
+        // Returns the vector of control points
         std::vector<Point3D> const & getControlPoints() const;
+        // Returns the number of control points
+        uint getNumControlPoints();
         
         // Return reference, mutable for surface[{i,j}] = Point3D(x, y, z)
         Point3D& controlPoint(uint const i, uint const j);
@@ -57,12 +33,14 @@ class Surface
         const Point3D& operator[](std::initializer_list<uint> const indices) const;
 
         void removeControlPoint(int i, int j);
-        Point3D generatePoint(float u, float v);
+        Point3D generatePoint(float u, float v) const;
     
     private:
         int _n;
         int _m;
-        std::vector<Point3D> _control_points; // Should be of size (_n+1)(_m+1)
+        
+        // Should be of size (_n+1)(_m+1)
+        std::vector<Point3D> _control_points;
 };
 
 
