@@ -84,7 +84,7 @@ class Camera
 
         void calculateIntersections(Point3D pixel_to_camera, Surface& surface);
         Point2D calculateGradient(Surface& surface, float u, float v);
-        uint gradientDescent(Point2D point, Surface& surface, float gamma);
+        uint gradientDescent(Point2D point, Surface& surface, float gamma, float u, float v);
         Image projectSurface(Surface& surface);
 
     private:
