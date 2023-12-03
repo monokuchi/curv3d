@@ -36,8 +36,8 @@ typedef struct Pixel
 typedef struct BoundingBox
 {
     // These two points define the rectangular bounding box
-    Point2D upper_left_corner;
-    Point2D lower_right_corner;
+    Point2D upper_right_corner;
+    Point2D lower_left_corner;
 
     // Returns true if point is in bounding box
     bool inBoundingBox(Point2D const & point) const;
@@ -82,14 +82,22 @@ class Camera
         // Sets new orientation vector going in (x, y, z) direction (can be any magnitude)
         void direction(float x, float y, float z);
 
-        void calculateIntersections(Point3D pixel_to_camera, Surface& surface);
-        Point2D calculateGradient(Surface& surface, float u, float v);
-        uint gradientDescent(Point2D& point, Surface& surface, float gamma, float u, float v);
+        // Sets new resolution
+        void resolution(uint res_x, uint res_y);
+
+        // Sets new size (width)
+        void size(float width);
+
+
+        void calculateIntersections(Surface& surface);
+        Point2D calculateGradient(Surface& surface, Point3D& pixel, std::pair<double, double> u_v_pair);
+        uint gradientDescent(std::pair<double, double> target_u_v, Point3D& pixel, Surface& surface, float gamma, double epsilon);
+        BoundingBox calculateBoundingBox(Surface& surface);
         Image projectSurface(Surface& surface);
 
 
-        float calcualteC(Surface& surface, float u, float v);
-        std::pair<float, float> validateGradient(Surface& surface, float u, float v, float h);
+        float calcualteC(Surface& surface, Point3D& pixel, float u, float v);
+        std::pair<float, float> validateGradient(Surface& surface, Point3D& pixel, float u, float v, float h);
 
     private:
         // Focal point of the camera in the world space

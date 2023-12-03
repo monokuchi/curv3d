@@ -3,21 +3,6 @@
 
 
 
-float calculateIntersection(Camera camera, Surface surface, Pixel pixel)
-{
-    return 2;
-}
-
-float newtonsMethod()
-{
-    return 2;
-}
-
-void calculateBoundingBox()
-{
-
-}
-
 // Screen rasterize(World world)
 // {
 //     Screen screen;
@@ -95,77 +80,77 @@ void Camera::direction(float x, float y, float z)
     _orientation_vector = Point3D(x, y, z);
 }
 
+void Camera::resolution(uint res_x, uint res_y)
+{
+    _resolution_x = res_x;
+    _resolution_y = res_y;
+}
+
+void Camera::size(float width)
+{
+    _size = width;
+}
+
 std::pair<Point3D, Point3D> Camera::getScreenBasis()
 {
-    // float f_x = _orientation_vector.xCoord();
-    // float f_y = _orientation_vector.yCoord();
-    // float f_z = _orientation_vector.zCoord();
-
-
     // Basis vector of screen space with respect to camera space
     Point3D u(_orientation_vector.yCoord(), -_orientation_vector.xCoord(), 0);
-
     // If we want to normalize u to width / _resolution_x we need to multiply u by width / (mag(u) * _resolution_x)
-    float normalizing_factor = _size / (u.mag() * _resolution_x);
-    u *= normalizing_factor;
-
+    u *= (_size / (u.mag() * _resolution_x));
 
     Point3D f = _orientation_vector;
     f *= 1 / _orientation_vector.mag();
 
-
-    // float u_x = u.xCoord();
-    // float u_y = u.yCoord();
-    // float u_z = u.zCoord();
-
     // v = u x f
-    // Point3D v(u_y*f_z - u_z*f_y, u_z*f_x - f_z*u_x, u_x*f_y - u_y*f_x);
     Point3D v = crossProduct(u, f);
 
-
-
     Point3D rotated_u = (u*std::cos(_orientation_angle)) + (v*std::sin(_orientation_angle));
-
-    // float rotated_u_x = rotated_u.xCoord();
-    // float rotated_u_y = rotated_u.yCoord();
-    // float rotated_u_z = rotated_u.zCoord();
-    
     // rotated_v = rotated_u x f
-    // Point3D rotated_v(rotated_u_y*f_z - rotated_u_z*f_y, rotated_u_z*f_x - f_z*rotated_u_x, rotated_u_x*f_y - rotated_u_y*f_x);
     Point3D rotated_v = crossProduct(rotated_u, f);
 
     return std::make_pair(rotated_u, rotated_v);
 }
 
-void Camera::calculateIntersections(Point3D pixel_to_camera, Surface& surface)
+void Camera::calculateIntersections(Surface& surface)
 {
     std::pair<Point3D, Point3D> basis_vectors = getScreenBasis();
+    // std::cout << "Screen Basis Vectors: " << std::endl;
+    // basis_vectors.first.printPoint3D();
+    // basis_vectors.second.printPoint3D();
 
 
     // Implement bounding box later
+    std::pair<double, double> target_u_v = std::make_pair(.5, .5);
     for (size_t i=0; i<_resolution_x; i++)
     {
         for (size_t j=0; j<_resolution_y; j++)
         {
-            Point3D screen_point = basis_vectors.first*(i-_resolution_x/2) + basis_vectors.second*(j-_resolution_y/2);
-
-            Point3D p = _orientation_vector + screen_point;
+            // screen_point is the vector from the center of the screen to Pixel(i, j)
+            // Point3D screen_point = basis_vectors.first*(i-_resolution_x/2) + basis_vectors.second*(j-_resolution_y/2);
+            Point3D screen_point = basis_vectors.first*(i) + basis_vectors.second*(j);
+            // pixel is the vector from focal_point to Pixel(i, j)
+            Point3D pixel = _orientation_vector + screen_point;
+            // pixel.printPoint3D();
             
 
             // min |p x (f(u,v) - foc)|^2, subject to u,v in [0,1]^2 
             // Assume order of the bezier surface, f(u, v), is fixed at 2
-            
 
+            double gamma = .001;
+            double epsilon = .001;
+            uint iteration_count = gradientDescent(target_u_v, pixel, surface, gamma, epsilon);
 
+            std::cout << "Gradient Descent completed in " << iteration_count << " steps!" << std::endl;
+            std::cout << "u: " << target_u_v.first << " v: " << target_u_v.second << std::endl;
         }
     }
 }
 
-Point2D Camera::calculateGradient(Surface& surface, float u, float v)
+Point2D Camera::calculateGradient(Surface& surface, Point3D& pixel, std::pair<double, double> u_v_pair)
 {
     /* 
         Calculates gradient of |p x (f(u, v) - foc)|^2
-        p: orientation vector
+        p: Pixel(i,j) - foc
         f(u, v): 3-D point on bezier surface
         foc: focal point of camera
     */
@@ -173,7 +158,8 @@ Point2D Camera::calculateGradient(Surface& surface, float u, float v)
     Eigen::RowVectorXf r(surface.getNumControlPoints());
     Eigen::MatrixXf q(surface.getNumControlPoints(), 2);
 
-
+    double u = u_v_pair.first;
+    double v = u_v_pair.second;
     // Since we fixed order to be (n, m) = (2, 2) we can manually fill in q
     q << -2*(1-u)*std::pow(1-v, 2.0f), -2*(1-v)*std::pow(1-u, 2.0f),
     -4*(v-std::pow(v, 2.0f))*(1-u), 2*std::pow(1-u, 2.0f)*(1-(2*v)),
@@ -192,6 +178,7 @@ Point2D Camera::calculateGradient(Surface& surface, float u, float v)
     std::cout << q << std::endl;
 
 
+    Point3D p = pixel - _focal_point;
     Point3D f = surface.generatePoint(u, v);
 
 
@@ -203,10 +190,10 @@ Point2D Camera::calculateGradient(Surface& surface, float u, float v)
         for (size_t j=0; j<=order.second; j++)
         {
             Point3D k = surface.controlPoint(i, j);
-            Point3D h = crossProduct(_orientation_vector, k);
+            Point3D h = crossProduct(p, k);
             
             // c = p x (f(u, v) - foc) = (p x f(u, v)) - (p x foc)
-            Point3D c = crossProduct(_orientation_vector, f) - crossProduct(_orientation_vector, _focal_point);
+            Point3D c = crossProduct(p, f) - crossProduct(p, _focal_point);
 
             vector_of_r.push_back(dotProduct(c, h));
         }
@@ -221,51 +208,69 @@ Point2D Camera::calculateGradient(Surface& surface, float u, float v)
     std::cout << "The vector r is of size " << r.size() << std::endl;
     std::cout << r << std::endl;
 
-    Eigen::Vector2f gradient = 2*(r*q);
+    Eigen::Vector2f gradient = 2.0*(r*q);
 
 
     return Point2D(gradient(0), gradient(1));
 }
 
-uint Camera::gradientDescent(Point2D& point, Surface& surface, float gamma, float u, float v)
+uint Camera::gradientDescent(std::pair<double, double> target_u_v, Point3D& pixel, Surface& surface, float gamma, double epsilon)
 {
-    Point2D prev_point = point;
+    Point2D curr_u_v = Point2D(target_u_v.first, target_u_v.second);
+    Point2D prev_u_v = curr_u_v;
 
+    Point2D diff_u_v;
     double diff;
     uint num_iterations = 0;
 
     do
     {
-        point.printPoint2D();
-        point -= calculateGradient(surface, u, v) * gamma;
-        diff = dotProduct(point, prev_point);
+        curr_u_v.printPoint2D();
+        curr_u_v -= (calculateGradient(surface, pixel, std::make_pair(curr_u_v.xCoord(), curr_u_v.yCoord())) * gamma);
+        diff_u_v = curr_u_v-prev_u_v;
+        diff = dotProduct(diff_u_v, diff_u_v);
         std::cout << "diff: " << diff << std::endl;
+        prev_u_v = curr_u_v;
         num_iterations++;
-    } while (diff > std::numeric_limits<double>::epsilon());
+    } while (diff > epsilon);
     
 
     return num_iterations;
 }
 
+BoundingBox Camera::calculateBoundingBox(Surface& surface)
+{
+    /* Finds the 3-D bounding box for a particular surface */
+
+
+    return BoundingBox();
+}
 
 
 
-float Camera::calcualteC(Surface& surface, float u, float v)
+
+
+
+
+
+
+float Camera::calcualteC(Surface& surface, Point3D& pixel, float u, float v)
 {
     // Calculates |c|^2
+    Point3D p = pixel - _orientation_vector;
     Point3D f = surface.generatePoint(u, v);
-    Point3D c = crossProduct(_orientation_vector, f) - crossProduct(_orientation_vector, _focal_point);
+    Point3D c = crossProduct(p, f) - crossProduct(p, _focal_point);
     return dotProduct(c, c);
 }
 
 
-std::pair<float, float> Camera::validateGradient(Surface& surface, float u, float v, float h)
+std::pair<float, float> Camera::validateGradient(Surface& surface, Point3D& pixel, float u, float v, float h)
 {
-    Point2D gradient = calculateGradient(surface, u, v);
+    Point2D gradient = calculateGradient(surface, pixel, std::make_pair(u, v));
 
 
-    float du = (calcualteC(surface, u+h, v) - calcualteC(surface, u-h, v)) / (2*h);
-    float dv = (calcualteC(surface, u, v+h) - calcualteC(surface, u, v-h)) / (2*h);
+    float du = (calcualteC(surface, pixel, u+h, v) - calcualteC(surface, pixel, u-h, v)) / (2*h);
+    float dv = (calcualteC(surface, pixel, u, v+h) - calcualteC(surface, pixel, u, v-h)) / (2*h);
 
     // float du = (calcualteC(surface, u+h, v) - calcualteC(surface, u, v)) / h;
     // float dv = (calcualteC(surface, u, v+h) - calcualteC(surface, u, v)) / h;
@@ -290,9 +295,11 @@ int main()
     // rasterize(world);
 
     Camera camera;
-    camera.direction(1.634, -.52652, 6.427);
+    camera.resolution(2, 2);
+    camera.size(10);
+    camera.direction(1.634, .52652, 6.427);
     // camera.direction(.5, .5, .5);
-    camera.focalLength(19);
+    camera.focalLength(4.25);
     
 
     Surface surface(2, 2);
@@ -313,34 +320,41 @@ int main()
 
 
 
-
-
-    // RUNS GRADIENT DESCENT
-    Point2D gradient_point(1, 1);
-    uint iteration_count = camera.gradientDescent(gradient_point, surface, .001, .3, .5);
-
-    std::cout << "Gradient Descent completed in " << iteration_count << " steps!" << std::endl;
-    gradient_point.printPoint2D();
-
-
-
-
-
-
     // VALIDATES THE GRADIENT
     // uint num_of_iterations = 50000;
     // float mean_error_u = 0.0;
     // float mean_error_v = 0.0;
+    // Point3D pixel_point_3D(1, 2, 3);
     // for (size_t i=0; i<num_of_iterations; i++)
     // {
     //     float u = static_cast<float> (rand()) / static_cast<float> (RAND_MAX);
     //     float v = static_cast<float> (rand()) / static_cast<float> (RAND_MAX);
     //     // std::cout << u << " " << v << std::endl;
-    //     std::pair<float, float> error_pair = camera.validateGradient(surface, u, v, .001);
+    //     std::pair<float, float> error_pair = camera.validateGradient(surface, pixel_point_3D, u, v, .001);
     //     mean_error_u += error_pair.first;
     //     mean_error_v += error_pair.second;
     // }
 
     // std::cout << "Mean Error u: " << mean_error_u/num_of_iterations << std::endl;
     // std::cout << "Mean Error v: " << mean_error_v/num_of_iterations << std::endl;
+
+
+
+
+
+
+
+    // RUNS GRADIENT DESCENT
+    // Point2D pixel_point(1, 1);
+    // Point3D pixel_point_3D(1, 2, 3);
+    // double epsilon = crossProduct(pixel_point_3D - );
+    // uint iteration_count = camera.gradientDescent(pixel_point, pixel_point_3D, surface, .01, epsilon, .3, .5);
+
+    // std::cout << "Gradient Descent completed in " << iteration_count << " steps!" << std::endl;
+    // pixel_point.printPoint2D();
+
+
+    camera.calculateIntersections(surface);
+
+
 }
