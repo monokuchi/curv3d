@@ -16,12 +16,12 @@ class Point2D
         float xCoord() const;
         float yCoord() const;
 
-        Point2D& operator=(Point2D const & other);
-        Point2D& operator+=(Point2D const & other);
-        Point2D& operator-=(Point2D const & other);
+        Point2D& operator=(const Point2D& other);
+        Point2D& operator+=(const Point2D& other);
+        Point2D& operator-=(const Point2D& other);
         Point2D& operator*=(float scalar);
-        Point2D operator+(Point2D const & rhs);
-        Point2D operator-(Point2D const & rhs);
+        Point2D operator+(const Point2D& rhs);
+        Point2D operator-(const Point2D& rhs);
         Point2D operator*(float scalar);
 
         float mag();
@@ -44,12 +44,12 @@ class Point3D
         float yCoord() const;
         float zCoord() const;
 
-        Point3D& operator=(Point3D const & other);
-        Point3D& operator+=(Point3D const & other);
-        Point3D& operator-=(Point3D const & other);
+        Point3D& operator=(const Point3D& other);
+        Point3D& operator+=(const Point3D& other);
+        Point3D& operator-=(const Point3D& other);
         Point3D& operator*=(float scalar);
-        Point3D operator+(Point3D const & rhs);
-        Point3D operator-(Point3D const & rhs);
+        Point3D operator+(const Point3D& rhs);
+        Point3D operator-(const Point3D& rhs);
         Point3D operator*(float scalar);
 
         float mag();

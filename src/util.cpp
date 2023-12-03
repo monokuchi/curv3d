@@ -26,7 +26,7 @@ float Point2D::yCoord() const
     return _y;
 }
 
-Point2D& Point2D::operator=(Point2D const & other)
+Point2D& Point2D::operator=(const Point2D& other)
 {
     if (this == &other)
     {
@@ -39,7 +39,7 @@ Point2D& Point2D::operator=(Point2D const & other)
     return *this;
 }
 
-Point2D& Point2D::operator+=(Point2D const & other)
+Point2D& Point2D::operator+=(const Point2D& other)
 {
     this->_x += other._x;
     this->_y += other._y;
@@ -47,7 +47,7 @@ Point2D& Point2D::operator+=(Point2D const & other)
     return *this;
 }
 
-Point2D& Point2D::operator-=(Point2D const & other)
+Point2D& Point2D::operator-=(const Point2D& other)
 {
     this->_x -= other._x;
     this->_y -= other._y;
@@ -63,7 +63,7 @@ Point2D& Point2D::operator*=(float scalar)
     return *this;
 }
 
-Point2D Point2D::operator+(Point2D const & rhs)
+Point2D Point2D::operator+(const Point2D& rhs)
 {
     Point2D point = *this;
 
@@ -73,7 +73,7 @@ Point2D Point2D::operator+(Point2D const & rhs)
     return point;
 }
 
-Point2D Point2D::operator-(Point2D const & rhs)
+Point2D Point2D::operator-(const Point2D& rhs)
 {
     Point2D point = *this;
 
@@ -133,7 +133,7 @@ float Point3D::zCoord() const
     return _z;
 }
 
-Point3D& Point3D::operator=(Point3D const & other)
+Point3D& Point3D::operator=(const Point3D& other)
 {
     if (this == &other)
     {
@@ -147,7 +147,7 @@ Point3D& Point3D::operator=(Point3D const & other)
     return *this;
 }
 
-Point3D& Point3D::operator+=(Point3D const & other)
+Point3D& Point3D::operator+=(const Point3D& other)
 {
     this->_x += other._x;
     this->_y += other._y;
@@ -156,7 +156,7 @@ Point3D& Point3D::operator+=(Point3D const & other)
     return *this;
 }
 
-Point3D& Point3D::operator-=(Point3D const & other)
+Point3D& Point3D::operator-=(const Point3D& other)
 {
     this->_x -= other._x;
     this->_y -= other._y;
@@ -174,7 +174,7 @@ Point3D& Point3D::operator*=(float scalar)
     return *this;
 }
 
-Point3D Point3D::operator+(Point3D const & rhs)
+Point3D Point3D::operator+(const Point3D& rhs)
 {
     Point3D point = *this;
 
@@ -185,7 +185,7 @@ Point3D Point3D::operator+(Point3D const & rhs)
     return point;
 }
 
-Point3D Point3D::operator-(Point3D const & rhs)
+Point3D Point3D::operator-(const Point3D& rhs)
 {
     Point3D point = *this;
 
