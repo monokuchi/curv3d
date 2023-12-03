@@ -175,7 +175,7 @@ Point2D Camera::calculateGradient(Surface& surface, float u, float v)
 
 
     // Since we fixed order to be (n, m) = (2, 2) we can manually fill in q
-    q << -2*u*(1-std::pow(v, 2.0f)), -2*v*(1-std::pow(u, 2.0f)),
+    q << -2*(1-u)*std::pow(1-v, 2.0f), -2*(1-v)*std::pow(1-u, 2.0f),
     -4*(v-std::pow(v, 2.0f))*(1-u), 2*std::pow(1-u, 2.0f)*(1-(2*v)),
     -2*std::pow(v, 2.0f)*(1-u), 2*std::pow(1-u, 2.0f)*v,
 
@@ -183,7 +183,7 @@ Point2D Camera::calculateGradient(Surface& surface, float u, float v)
     4*(v-std::pow(v, 2.0f))*(1-(2*u)), 4*(u-std::pow(u, 2.0f))*(1-(2*v)),
     2*std::pow(v, 2.0f)*(1-(2*u)), 4*(u-std::pow(u, 2.0f))*v,
 
-    2*std::pow(1-std::pow(v, 2.0f), 2.0f)*u, -2*std::pow(u, 2.0f)*(1-v),
+    2*std::pow(1-v, 2.0f)*u, -2*std::pow(u, 2.0f)*(1-v),
     4*(v-std::pow(v, 2.0f))*u, 2*std::pow(u, 2.0f)*(1-(2*v)),
     2*std::pow(v, 2.0f)*u, 2*std::pow(u, 2.0f)*v;
 
@@ -198,14 +198,14 @@ Point2D Camera::calculateGradient(Surface& surface, float u, float v)
     std::pair<int, int> order = surface.getOrder();
     std::vector<float> vector_of_r;
     vector_of_r.reserve(surface.getNumControlPoints());
-    for (size_t i=0; i<order.first; i++) // Fix order to be (n, m) = (2, 2) so we have 9 control points
+    for (size_t i=0; i<=order.first; i++) // Fix order to be (n, m) = (2, 2) so we have 9 control points
     {
-        for (size_t j=0; j<order.second; j++)
+        for (size_t j=0; j<=order.second; j++)
         {
             Point3D k = surface.controlPoint(i, j);
             Point3D h = crossProduct(_orientation_vector, k);
             
-            // p x (f(u, v) - foc) = (p x f(u, v)) - (p x foc)
+            // c = p x (f(u, v) - foc) = (p x f(u, v)) - (p x foc)
             Point3D c = crossProduct(_orientation_vector, f) - crossProduct(_orientation_vector, _focal_point);
 
             vector_of_r.push_back(dotProduct(c, h));
@@ -227,24 +227,22 @@ Point2D Camera::calculateGradient(Surface& surface, float u, float v)
     return Point2D(gradient(0), gradient(1));
 }
 
-uint Camera::gradientDescent(Point2D point, Surface& surface, float gamma, float u, float v)
+uint Camera::gradientDescent(Point2D& point, Surface& surface, float gamma, float u, float v)
 {
-    Point2D equilibrium_point = point;
-    Point2D prev_equilibrium_point = equilibrium_point;
+    Point2D prev_point = point;
 
-    double diff = 100.0;
+    double diff;
     uint num_iterations = 0;
 
-
-    while (diff > std::numeric_limits<double>::epsilon())
+    do
     {
-        std::cout << "Entered while loop!" << std::endl;
-        equilibrium_point.printPoint2D();
-        equilibrium_point -= calculateGradient(surface, u, v) * gamma;
-        diff = std::pow((equilibrium_point - prev_equilibrium_point).mag(), 2.0);
+        point.printPoint2D();
+        point -= calculateGradient(surface, u, v) * gamma;
+        diff = dotProduct(point, prev_point);
         std::cout << "diff: " << diff << std::endl;
         num_iterations++;
-    }
+    } while (diff > std::numeric_limits<double>::epsilon());
+    
 
     return num_iterations;
 }
@@ -252,6 +250,28 @@ uint Camera::gradientDescent(Point2D point, Surface& surface, float gamma, float
 
 
 
+float Camera::calcualteC(Surface& surface, float u, float v)
+{
+    // Calculates |c|^2
+    Point3D f = surface.generatePoint(u, v);
+    Point3D c = crossProduct(_orientation_vector, f) - crossProduct(_orientation_vector, _focal_point);
+    return dotProduct(c, c);
+}
+
+
+std::pair<float, float> Camera::validateGradient(Surface& surface, float u, float v, float h)
+{
+    Point2D gradient = calculateGradient(surface, u, v);
+
+
+    float du = (calcualteC(surface, u+h, v) - calcualteC(surface, u-h, v)) / (2*h);
+    float dv = (calcualteC(surface, u, v+h) - calcualteC(surface, u, v-h)) / (2*h);
+
+    // float du = (calcualteC(surface, u+h, v) - calcualteC(surface, u, v)) / h;
+    // float dv = (calcualteC(surface, u, v+h) - calcualteC(surface, u, v)) / h;
+
+    return std::make_pair(std::abs(gradient.xCoord() - du), std::abs(gradient.yCoord() - dv));
+}
 
 
 
@@ -264,17 +284,16 @@ uint Camera::gradientDescent(Point2D point, Surface& surface, float gamma, float
 
 int main()
 {
-    std::cout << "Welcome to curv3d!" << std::endl;
-
     // World world;
     // world.insertSurface(Surface());
 
     // rasterize(world);
 
     Camera camera;
-    camera.direction(.5, .5, .5);
-    camera.focalLength(1.4);
-
+    camera.direction(1.634, -.52652, 6.427);
+    // camera.direction(.5, .5, .5);
+    camera.focalLength(19);
+    
 
     Surface surface(2, 2);
     surface[{0, 0}] = Point3D(0, 0, 0);
@@ -288,10 +307,40 @@ int main()
     surface[{2, 2}] = Point3D(1, 1, 0);
 
 
-    Point2D gradient_point(1, 1);
-    uint iteration_count = camera.gradientDescent(gradient_point, surface, .1, .3, .5);
 
+
+
+
+
+
+
+
+    // RUNS GRADIENT DESCENT
+    Point2D gradient_point(1, 1);
+    uint iteration_count = camera.gradientDescent(gradient_point, surface, .001, .3, .5);
 
     std::cout << "Gradient Descent completed in " << iteration_count << " steps!" << std::endl;
     gradient_point.printPoint2D();
+
+
+
+
+
+
+    // VALIDATES THE GRADIENT
+    // uint num_of_iterations = 50000;
+    // float mean_error_u = 0.0;
+    // float mean_error_v = 0.0;
+    // for (size_t i=0; i<num_of_iterations; i++)
+    // {
+    //     float u = static_cast<float> (rand()) / static_cast<float> (RAND_MAX);
+    //     float v = static_cast<float> (rand()) / static_cast<float> (RAND_MAX);
+    //     // std::cout << u << " " << v << std::endl;
+    //     std::pair<float, float> error_pair = camera.validateGradient(surface, u, v, .001);
+    //     mean_error_u += error_pair.first;
+    //     mean_error_v += error_pair.second;
+    // }
+
+    // std::cout << "Mean Error u: " << mean_error_u/num_of_iterations << std::endl;
+    // std::cout << "Mean Error v: " << mean_error_v/num_of_iterations << std::endl;
 }

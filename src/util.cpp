@@ -220,10 +220,15 @@ void Point3D::printPoint3D()
 
 Point3D crossProduct(Point3D& vec_1, Point3D& vec_2)
 {
-    return Point3D(vec_1.yCoord()*vec_2.zCoord() - vec_1.zCoord()*vec_2.yCoord(), vec_1.zCoord()*vec_2.xCoord() - vec_2.zCoord()*vec_1.xCoord(), vec_1.xCoord()*vec_2.yCoord() - vec_1.yCoord()*vec_2.xCoord());
+    return Point3D(vec_1.yCoord()*vec_2.zCoord() - vec_1.zCoord()*vec_2.yCoord(), vec_1.zCoord()*vec_2.xCoord() - vec_1.xCoord()*vec_2.zCoord(), vec_1.xCoord()*vec_2.yCoord() - vec_1.yCoord()*vec_2.xCoord());
 }
 
 float dotProduct(Point3D& vec_1, Point3D& vec_2)
 {
     return vec_1.xCoord()*vec_2.xCoord() + vec_1.yCoord()*vec_2.yCoord() + vec_1.zCoord()*vec_2.zCoord();
+}
+
+float dotProduct(Point2D& vec_1, Point2D& vec_2)
+{
+    return vec_1.xCoord()*vec_2.xCoord() + vec_1.yCoord()*vec_2.yCoord();
 }

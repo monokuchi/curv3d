@@ -84,8 +84,12 @@ class Camera
 
         void calculateIntersections(Point3D pixel_to_camera, Surface& surface);
         Point2D calculateGradient(Surface& surface, float u, float v);
-        uint gradientDescent(Point2D point, Surface& surface, float gamma, float u, float v);
+        uint gradientDescent(Point2D& point, Surface& surface, float gamma, float u, float v);
         Image projectSurface(Surface& surface);
+
+
+        float calcualteC(Surface& surface, float u, float v);
+        std::pair<float, float> validateGradient(Surface& surface, float u, float v, float h);
 
     private:
         // Focal point of the camera in the world space

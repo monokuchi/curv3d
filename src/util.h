@@ -64,6 +64,7 @@ class Point3D
 
 Point3D crossProduct(Point3D& vec_1, Point3D& vec_2);
 float dotProduct(Point3D& vec_1, Point3D& vec_2);
+float dotProduct(Point2D& vec_1, Point2D& vec_2);
 
 
 #endif // UTIL_H
