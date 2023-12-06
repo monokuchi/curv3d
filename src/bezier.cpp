@@ -1,7 +1,8 @@
 
-#include <bezier.h>
 #include <cmath>
 #include <fstream>
+
+#include "bezier.h"
 
 
 

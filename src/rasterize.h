@@ -5,8 +5,8 @@
 #include <iostream>
 #include <vector>
 
-#include <bezier.h>
-#include <eigen3/Eigen/Dense>
+#include "bezier.h"
+#include "eigen3/Eigen/Dense"
 
 
 
@@ -91,7 +91,7 @@ class Camera
 
         void calculateIntersections(Surface& surface);
         Point2D calculateGradient(Surface& surface, Point3D& pixel, std::pair<double, double> u_v_pair);
-        uint gradientDescent(std::pair<double, double> target_u_v, Point3D& pixel, Surface& surface, float gamma, double epsilon);
+        uint gradientDescent(Surface& surface, Point3D& pixel, std::pair<double, double>& target_u_v, float gamma, double epsilon);
         BoundingBox calculateBoundingBox(Surface& surface);
         Image projectSurface(Surface& surface);
 
