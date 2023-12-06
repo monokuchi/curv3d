@@ -35,12 +35,16 @@ typedef struct Pixel
 
 typedef struct BoundingBox
 {
-    // These two points define the rectangular bounding box
+    // Two points that define the rectangular bounding box
     Point2D upper_right_corner;
     Point2D lower_left_corner;
 
     // Returns true if point is in bounding box
-    bool inBoundingBox(Point2D const & point) const;
+    bool inBoundingBox(const Point2D& point) const;
+    // Calculates the bounding box
+    void calculateBoundingBox(Surface& surface);
+    // Calculates the gradient
+    void findExtremas(Surface& surface, std::pair<double, double> u_v_pair);
 } BoundingBox;
 
 
@@ -92,7 +96,6 @@ class Camera
         void calculateIntersections(Surface& surface);
         Point2D calculateGradient(Surface& surface, Point3D& pixel, std::pair<double, double> u_v_pair);
         uint gradientDescent(Surface& surface, Point3D& pixel, std::pair<double, double>& target_u_v, float gamma, double epsilon);
-        BoundingBox calculateBoundingBox(Surface& surface);
         Image projectSurface(Surface& surface);
 
 

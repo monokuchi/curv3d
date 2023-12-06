@@ -18,7 +18,73 @@
 
 
 
+/* 
+**********************************************
+START: BoundingBox Member Function Definitions 
+**********************************************
+*/
 
+bool BoundingBox::inBoundingBox(const Point2D& point) const
+{
+    if ((point.xCoord() > lower_left_corner.xCoord() && point.xCoord() < upper_right_corner.xCoord()) && (point.yCoord() > lower_left_corner.yCoord() && point.yCoord() < upper_right_corner.yCoord()))
+        return true;
+    return false;
+}
+
+void BoundingBox::calculateBoundingBox(Surface& surface)
+{
+    /* Finds the 3-D bounding box for a particular surface */
+    std::pair<double, double> u_v_pair(1, 0);
+    findExtremas(surface, u_v_pair);
+}
+
+void BoundingBox::findExtremas(Surface& surface, std::pair<double, double> u_v_pair)
+{
+    Eigen::RowVectorXf k(surface.getNumControlPoints());
+    Eigen::MatrixXf q(surface.getNumControlPoints(), 2);
+
+    double u = u_v_pair.first;
+    double v = u_v_pair.second;
+    
+    // Since we fixed order to be (n, m) = (2, 2) we can manually fill in q
+    q << -2*(1-u)*std::pow(1-v, 2.0f), -2*(1-v)*std::pow(1-u, 2.0f),
+    -4*(v-std::pow(v, 2.0f))*(1-u), 2*std::pow(1-u, 2.0f)*(1-(2*v)),
+    -2*std::pow(v, 2.0f)*(1-u), 2*std::pow(1-u, 2.0f)*v,
+
+    2*std::pow(1-v, 2.0f)*(1-(2*u)), -4*(u-std::pow(u, 2.0f))*(1-v),
+    4*(v-std::pow(v, 2.0f))*(1-(2*u)), 4*(u-std::pow(u, 2.0f))*(1-(2*v)),
+    2*std::pow(v, 2.0f)*(1-(2*u)), 4*(u-std::pow(u, 2.0f))*v,
+
+    2*std::pow(1-v, 2.0f)*u, -2*std::pow(u, 2.0f)*(1-v),
+    4*(v-std::pow(v, 2.0f))*u, 2*std::pow(u, 2.0f)*(1-(2*v)),
+    2*std::pow(v, 2.0f)*u, 2*std::pow(u, 2.0f)*v;
+
+    std::vector<Point3D> control_points = surface.getControlPoints();
+
+    for (size_t i=0; i<control_points.size(); i++)
+    {
+        // k(i) = control_points[i];
+        control_points[i].printPoint3D();
+    }
+
+}
+
+/* 
+**********************************************
+END: BoundingBox Member Function Definitions 
+**********************************************
+*/
+
+
+
+
+
+
+/* 
+**********************************************
+START: Camera Member Function Definitions 
+**********************************************
+*/
 
 Camera::Camera()
 {
@@ -119,9 +185,12 @@ void Camera::calculateIntersections(Surface& surface)
     // basis_vectors.second.printPoint3D();
 
 
-    // Implement bounding box later
+    // Find the bounding box for this surface
+    BoundingBox bounding_box;
+    bounding_box.calculateBoundingBox(surface);
+
     std::pair<double, double> target_u_v(.5, .2);
-    for (size_t i=0; i<_resolution_x; i++)
+    for (size_t i=0; i<_resolution_x; i++) // Make (i, j) go to bounding box bounds
     {
         for (size_t j=0; j<_resolution_y; j++)
         {
@@ -166,6 +235,7 @@ Point2D Camera::calculateGradient(Surface& surface, Point3D& pixel, std::pair<do
 
     double u = u_v_pair.first;
     double v = u_v_pair.second;
+
     // Since we fixed order to be (n, m) = (2, 2) we can manually fill in q
     q << -2*(1-u)*std::pow(1-v, 2.0f), -2*(1-v)*std::pow(1-u, 2.0f),
     -4*(v-std::pow(v, 2.0f))*(1-u), 2*std::pow(1-u, 2.0f)*(1-(2*v)),
@@ -246,22 +316,6 @@ uint Camera::gradientDescent(Surface& surface, Point3D& pixel, std::pair<double,
     return num_iterations;
 }
 
-BoundingBox Camera::calculateBoundingBox(Surface& surface)
-{
-    /* Finds the 3-D bounding box for a particular surface */
-
-
-    return BoundingBox();
-}
-
-
-
-
-
-
-
-
-
 float Camera::calcualteC(Surface& surface, Point3D& pixel, float u, float v)
 {
     // Calculates |c|^2
@@ -270,7 +324,6 @@ float Camera::calcualteC(Surface& surface, Point3D& pixel, float u, float v)
     Point3D c = crossProduct(p, f) - crossProduct(p, _focal_point);
     return dotProduct(c, c);
 }
-
 
 std::pair<float, float> Camera::validateGradient(Surface& surface, Point3D& pixel, float u, float v, float h)
 {
@@ -286,7 +339,11 @@ std::pair<float, float> Camera::validateGradient(Surface& surface, Point3D& pixe
     return std::make_pair(std::abs(gradient.xCoord() - du), std::abs(gradient.yCoord() - dv));
 }
 
-
+/* 
+**********************************************
+END: Camera Member Function Definitions 
+**********************************************
+*/
 
 
 
@@ -305,7 +362,7 @@ int main()
     Camera camera;
     camera.resolution(2, 2);
     camera.size(10);
-    camera.direction(-1.634, .52652, 6.427);
+    camera.direction(-1.634, -36.52652, 25.427);
     // camera.direction(.5, -.5, .5);
     camera.focalLength(10.424);
     
@@ -366,10 +423,5 @@ int main()
 
 
 
-
-
-
     camera.calculateIntersections(surface);
-
-
 }

@@ -20,7 +20,7 @@ class Surface
         std::pair<int, int> getOrder() const;
 
         // Returns the vector of control points
-        std::vector<Point3D> const & getControlPoints() const;
+        const std::vector<Point3D>& getControlPoints() const;
         // Returns the number of control points
         uint getNumControlPoints();
         

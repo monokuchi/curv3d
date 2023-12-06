@@ -38,7 +38,7 @@ std::pair<int, int> Surface::getOrder() const
     return std::make_pair(_n, _m);
 }
 
-std::vector<Point3D> const & Surface::getControlPoints() const
+const std::vector<Point3D>& Surface::getControlPoints() const
 {
     return _control_points;
 }
