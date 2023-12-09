@@ -1,3 +1,5 @@
+
+.vscode
 .venv
 build/
 curv3d*
@@ -5,5 +7,5 @@ curv3d*
 
 libraries/*
 !libraries/clone/
-.vscode
 scripts/run_curv3d.sh
+scripts/points.txt
