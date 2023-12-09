@@ -1,0 +1,9 @@
+[submodule "libraries/clone/Eigen-3.4.0"]
+	path = libraries/clone/Eigen-3.4.0
+	url = https://git.acem.ece.illinois.edu/lib/Eigen-3.4.0
+[submodule "libraries/clone/CudaTools"]
+	path = libraries/clone/CudaTools
+	url = https://git.acem.ece.illinois.edu/kjao/CudaTools
+[submodule "libraries/clone/pybind11-2.10.4"]
+	path = libraries/clone/pybind11-2.10.4
+	url = https://git.acem.ece.illinois.edu/lib/pybind11-2.10.4

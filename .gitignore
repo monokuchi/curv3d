@@ -1,12 +1,7 @@
+.venv
+build/
+curv3d*
+!src/*
 
-# Visual Studio
-.vscode
-
-# Build directory
-build
-
-# Point data
-scripts/points.txt
-
-# Run script
-scripts/run_curv3d.sh
+libraries/*
+!libraries/clone/
