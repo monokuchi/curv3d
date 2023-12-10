@@ -6,12 +6,14 @@ namespace curv3d {
 // Pixel Methods //
 ///////////////////
 
-template <> uint8_t& Pixel::operator()<0>() { return r; }
-template <> uint8_t& Pixel::operator()<1>() { return g; }
-template <> uint8_t& Pixel::operator()<2>() { return b; }
-template <> const uint8_t& Pixel::operator()<0>() const { return r; }
-template <> const uint8_t& Pixel::operator()<1>() const { return g; }
-template <> const uint8_t& Pixel::operator()<2>() const { return b; }
+uint8_t& Pixel::operator[](const uint i) {
+    ERROR_IF(i, >, 2, "Color number must be [0:2]");
+    return *(&r + i);
+}
+const uint8_t& Pixel::operator[](const uint i) const {
+    ERROR_IF(i, >, 2, "Color number must be [0:2]");
+    return *(&r + i);
+}
 
 void Pixel::operator=(const Pixel& pix) volatile { r = pix.r, g = pix.g, b = pix.b; }
 

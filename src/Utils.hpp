@@ -12,8 +12,8 @@
 #include <vector>
 
 namespace CT = CudaTools;
-using real = CT::Types::real64;
-using uint = uint32_t;
+using real = CT::Types::real64; /**< Stores real values. */
+using uint = uint32_t;          /**< Stores an unsigned integer. */
 using Shape = CT::Shape;
 
 template <typename T> using Array = CT::Array<T>;
@@ -88,7 +88,7 @@ template <typename T> struct TwoVector {
     // Due to memory layout, dereferencing needs these offsets.
 
     /**
-     * Constructs a TwoVector as a wrapper of some data, given a pointer.
+     * Recasts a pointer into a TwoVector at that pointer.
      * \param p the pointer to the data.
      */
     HD static TwoVector& from_pointer(T* const p) { return *reinterpret_cast<TwoVector<T>*>(p); };
@@ -163,7 +163,7 @@ template <typename T> struct ThreeVector {
     HD ThreeVector(const T x) : x(x), y(x), z(x){};
 
     /**
-     * Constructs a TwoVector as a wrapper of some data, given a pointer.
+     * Recasts a pointer into a ThreeVector at that pointer.
      * \param p the pointer to the data.
      */
     HD static ThreeVector& from_pointer(T* const p) {
@@ -261,15 +261,18 @@ template <typename T> struct hash<curv3d::ThreeVector<T>> {
 namespace curv3d {
 using SPoint = TwoVector<real>;   /**< Represents a coordinat (u,v) on a surface primitive. */
 using SVector = TwoVector<real>;  /**< Represents a two vector for surface gradients. */
+using Order = TwoVector<uint>;    /**< Represents the order of a surface primitive. */
+using TwoIndex = TwoVector<uint>; /**< Represents a two-tuple of indices. */
+
 using GPoint = ThreeVector<real>; /**< Represents a coordinate in global space. */
 using LPoint = ThreeVector<real>; /**< Represents a coordinate in local space. */
 using Vector = ThreeVector<real>; /**< Represents a three-dimensional vector. */
-using Order = TwoVector<uint>;    /**< Represents the order of a surface primitive. */
+using Angles = ThreeVector<real>; /**< Represents three angles for a basis. */
 
 using ControlList =
     std::vector<std::vector<uint>>; /**< Represents the indices of control points. */
 
-struct BoundingBox {
+struct BoundingBox { /**< Represents the two corners of a bounding box. */
     SPoint min = SPoint(std::numeric_limits<real>::max());
     SPoint max = SPoint(std::numeric_limits<real>::min());
 };

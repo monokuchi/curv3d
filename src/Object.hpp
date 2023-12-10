@@ -10,13 +10,16 @@
 
 namespace curv3d {
 
-using TwoIndex = TwoVector<uint>;
-using Angles = ThreeVector<real>;
-using Basis = Eigen::Matrix<real, 3, 3, Eigen::ColMajor>;
+using Basis = Eigen::Matrix<real, 3, 3, Eigen::ColMajor>; /**< Represents a 3D Basis. */
+/**
+ * Represents a 3xN matrix of points.
+ */
 using PointMatrix = Eigen::Matrix<real, 3, Eigen::Dynamic, Eigen::ColMajor>;
-using ScreenBasis = std::pair<Vector, Vector>;
+using ScreenBasis = std::pair<Vector, Vector>; /**< Represents the basis of a camera screen. */
 
-/** Generic class for objects that live in the World. */
+/**
+ * Generic class for objects, which are composed of Surfaces.
+ */
 class Object {
   protected:
     GPoint mPosition; /** The global position of this Object. */

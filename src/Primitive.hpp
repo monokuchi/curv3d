@@ -31,13 +31,15 @@ class Surface {
     /**
      * Constructor for a Surface.
      * \param order the order of the surface.
-     * \param the pointer to the points array.
-     * \param the pointer to the start of the indices. */
+     * \param points the pointer to the points array.
+     * \param indices the pointer to the start of the indices.
+     * \param origin the inherited origin of the Surface.
+     */
     HD Surface(const Order& order, real* const points, uint* const indices, const GPoint& origin);
 
     HD LPoint control(const uint i);               /**< Returns the i-th control point. */
     HD LPoint control(const uint i, const uint j); /**< Returns the (i,j)-th control point. */
-    HD LPoint operator[](const uint i);
+    HD LPoint operator[](const uint i);            /**< Returns the i-th control point. */
 
     HD const LPoint control(const uint i) const;
     HD const LPoint control(const uint i, const uint j) const;

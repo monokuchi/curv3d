@@ -2,80 +2,126 @@
 Classes
 =======
 
-There are a few classes used for storing mesh data. All of the classes are stored under
-the namespace ``Geometry``, and hence is ommitted from now on.
+The classes are the classes are stored under the namespace ``curv3d``, and hence
+is omitted from now on.
 
 .. note::
 
-   Most functions are also available in the Python module, however, the ``camelCase``
-   naming is replaced with ``snake_case``. For example, in C++, one would write
-   ``mesh.exportFacesSTL(...)``, but in Python, ``mesh.export_faces_stl(...)`` would be
-   correct.
+   Most functions should also available in the Python module, and will follow the
+   same name and parameters unless otherwise specified.
 
-There are two main components:
+We can sort the classes by file:
 
-#. :ref:`Mesh Related`
-#. :ref:`IO Related`
+#. :ref:`Utilities`
+#. :ref:`Primitive Related`
+#. :ref:`Object Related`
+#. :ref:`Scene Related`
 
-Mesh Related
-============
-These classes relate primarily to the actual geometry mesh data itself.
+
+Utilities
+=========
+These define commonly used classes and types.
+
+
+Base Types
+----------
+
+.. doxygentypedef:: real
+
+.. doxygentypedef:: uint
+
+Tuple Types
+-----------
+
+.. doxygentypedef:: curv3d::SPoint
+
+.. doxygentypedef:: curv3d::SVector
+
+.. doxygentypedef:: curv3d::Order
+
+.. doxygentypedef:: curv3d::TwoIndex
+
+.. doxygentypedef:: curv3d::GPoint
+
+.. doxygentypedef:: curv3d::LPoint
+
+.. doxygentypedef:: curv3d::Vector
+
+.. doxygentypedef:: curv3d::Angles
+
+Both these vector structs support all expected operator overloads.
+
+TwoVector<T>
+------------
+.. doxygenstruct:: curv3d::TwoVector
+    :members:
+    :allow-dot-graphs:
 
 ThreeVector<T>
 --------------
-.. doxygenclass:: Geometry::ThreeVector
+.. doxygenstruct:: curv3d::ThreeVector
     :members:
     :allow-dot-graphs:
 
-.. doxygentypedef:: Geometry::Vector
-.. doxygentypedef:: Geometry::Indices
 
-Face
-----
-.. doxygenclass:: Geometry::Face
-    :members:
+Primitive Related
+=================
 
-Element
+Surface
 -------
-.. doxygenclass:: Geometry::Element
+
+.. doxygenclass:: curv3d::Surface
     :members:
-
-
-BoundaryCondition
------------------
-.. doxygenenum:: Geometry::BoundaryCondition
-
-VolumeMeshInfo
---------------
-.. doxygenstruct:: Geometry::VolumeMeshInfo
-    :members:
-
-VolumeMesh
-----------
-.. doxygenclass:: Geometry::VolumeMesh
-    :members:
+    :private-members:
     :allow-dot-graphs:
 
 
-IO Related
-==========
+Object Related
+==============
 
-EXODUS
+.. doxygentypedef:: curv3d::Basis
+
+.. doxygentypedef:: curv3d::PointMatrix
+
+.. doxygentypedef:: curv3d::ScreenBasis
+
+Object
 ------
-.. doxygenclass:: Geometry::IO::EXODUS
-    :members:
 
-JSON
-----
-
-.. doxygenstruct:: Geometry::IO::JSON::ElementSet
+.. doxygenclass:: curv3d::Object
     :members:
+    :protected-members:
+    :allow-dot-graphs:
 
-.. doxygenstruct:: Geometry::IO::JSON::FaceSet
-    :members:
+Camera
+------
 
-.. doxygenstruct:: Geometry::IO::JSON::HybridMesh
+.. doxygenclass:: curv3d::Camera
     :members:
+    :protected-members:
+    :allow-dot-graphs:
 
-.. doxygenstruct:: Geometry::IO::JSON::Config
+Scene Related
+=============
+
+Pixel
+-----
+
+.. doxygenstruct:: curv3d::Pixel
     :members:
+    :allow-dot-graphs:
+
+ImageBuffer
+-----------
+
+.. doxygenstruct:: curv3d::ImageBuffer
+    :members:
+    :allow-dot-graphs:
+
+Scene
+-----
+
+.. doxygenclass:: curv3d::Scene
+    :members:
+    :private-members:
+    :allow-dot-graphs:
