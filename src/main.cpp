@@ -49,6 +49,7 @@ int main() {
     obj.add_surface(Order(2, 2), {{0, 1, 2}, {3, 4, 5}, {6, 7, 8}});
     scene.add_object(obj);
 
+    // Get the first surface in the object
     surface_points(obj.surface(0));
 
     std::vector<uint> iters = scene.slow_rasterize();

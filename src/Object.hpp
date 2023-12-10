@@ -1,9 +1,9 @@
 #ifndef OBJECT_HPP
 #define OBJECT_HPP
 
-#include <Eigen/Dense>
 #include <iostream>
 #include <vector>
+#include <Eigen/Dense>
 
 #include "Primitive.hpp"
 #include "Utils.hpp"

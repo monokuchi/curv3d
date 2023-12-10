@@ -1,15 +1,15 @@
 #ifndef UTILS_HPP
 #define UTILS_HPP
 
-#include <CudaTools/Array.h>
-#include <CudaTools/Core.h>
-#include <CudaTools/Macros.h>
-#include <CudaTools/Types.h>
-
 #include <chrono>
 #include <cstdint>
 #include <limits>
 #include <vector>
+
+#include <CudaTools/Array.h>
+#include <CudaTools/Core.h>
+#include <CudaTools/Macros.h>
+#include <CudaTools/Types.h>
 
 namespace CT = CudaTools;
 using real = CT::Types::real64; /**< Stores real values. */
@@ -269,8 +269,7 @@ using LPoint = ThreeVector<real>; /**< Represents a coordinate in local space. *
 using Vector = ThreeVector<real>; /**< Represents a three-dimensional vector. */
 using Angles = ThreeVector<real>; /**< Represents three angles for a basis. */
 
-using ControlList =
-    std::vector<std::vector<uint>>; /**< Represents the indices of control points. */
+using ControlList = std::vector<std::vector<uint>>; /**< Represents the indices of control points. */
 
 struct BoundingBox { /**< Represents the two corners of a bounding box. */
     SPoint min = SPoint(std::numeric_limits<real>::max());
